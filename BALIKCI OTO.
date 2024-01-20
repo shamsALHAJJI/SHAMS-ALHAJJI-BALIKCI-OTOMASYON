@@ -1,0 +1,85 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+
+using namespace std;
+
+
+struct Fish {
+    string name;
+    int price;
+    int stock;
+};
+
+
+void displayFishList(const Fish fishArray[], int fishCount) {
+    cout << "Please select a fish from the following list:" << endl;
+    for (int i = 0; i < fishCount; i++) {
+        cout << i + 1 << ". " << fishArray[i].name << " - " << fishArray[i].price << " TL" << endl;
+    }
+}
+
+
+void updateFishStock(Fish& selectedFish, int quantity) {
+    selectedFish.stock -= quantity;
+}
+
+int main() {
+    const int MAX_FISH_COUNT = 5;
+    Fish fishArray[MAX_FISH_COUNT] = {
+        {"levrek", 50, 10},
+        {"somon", 60, 5},
+        {"alabalik", 40, 15},
+        {"cipura", 45, 20},
+        {"hamsi", 20, 30}
+    };
+
+    int total_income = 0;
+    int fish_count = sizeof(fishArray) / sizeof(fishArray[0]);
+
+    cout << "Welcome to Balikci Otomasyonu!" << endl;
+    displayFishList(fishArray, fish_count);
+
+    int selected_fish;
+    cout << "Enter the number of the fish you want to buy: ";
+    cin >> selected_fish;
+
+    if (selected_fish < 1 || selected_fish > fish_count) {
+        cout << "Invalid selection. Please try again." << endl;
+        return 0;
+    }
+
+    Fish& selectedFish = fishArray[selected_fish - 1];
+
+    if (selectedFish.stock == 0) {
+        cout << "Sorry, the fish you selected is out of stock." << endl;
+        return 0;
+    }
+
+    cout << "You have selected " << selectedFish.name << " for " << selectedFish.price << " TL." << endl;
+
+    int selected_fish_quantity;
+    cout << "Enter the quantity you want to buy: ";
+    cin >> selected_fish_quantity;
+
+    if (selected_fish_quantity > selectedFish.stock) {
+        cout << "Sorry, we only have " << selectedFish.stock << " " << selectedFish.name << " in stock." << endl;
+        return 0;
+    }
+
+    total_income += selectedFish.price * selected_fish_quantity;
+    updateFishStock(selectedFish, selected_fish_quantity);
+
+    cout << "You have successfully purchased " << selected_fish_quantity << " " << selectedFish.name << " for " << selectedFish.price * selected_fish_quantity << " TL." << endl;
+    cout << "Thank you for shopping with us!" << endl;
+
+   
+    ofstream outFile("fish_stock.txt");
+    for (int i = 0; i < fish_count; i++) {
+        outFile << fishArray[i].name << " " << fishArray[i].price << " " << fishArray[i].stock << endl;
+    }
+    outFile.close();
+
+    return 0;
+}
+
